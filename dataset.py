@@ -29,7 +29,8 @@ class MyDataset(Dataset):
             
         self.data = []
         for vid in self.videos:
-            items = vid.split(os.path.sep)            
+            # items = vid.split(os.path.sep)            
+            items = vid.split("/")            
             self.data.append((vid, items[-4], items[-1]))
         
                 

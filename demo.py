@@ -17,6 +17,7 @@ import tempfile
 import shutil
 import cv2
 import face_alignment
+# import options as opt
 
 
 
@@ -49,13 +50,14 @@ def get_position(size, padding=0.25):
 def cal_area(anno):
     return (anno[:,0].max() - anno[:,0].min()) * (anno[:,1].max() - anno[:,1].min()) 
 
-def output_video(p, txt, dst):
+def output_video(p, txt):
     files = os.listdir(p)
     files = sorted(files, key=lambda x: int(os.path.splitext(x)[0]))
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     
     for file, line in zip(files, txt):
+        print("++ see line: ", line)
         img = cv2.imread(os.path.join(p, file))
         h, w, _ = img.shape
         img = cv2.putText(img, line, (w//8, 11*h//12), font, 1.2, (0, 0, 0), 3, cv2.LINE_AA)
@@ -65,8 +67,15 @@ def output_video(p, txt, dst):
         img = cv2.resize(img, (w, h))     
         cv2.imwrite(os.path.join(p, file), img)
     
-    cmd = "ffmpeg -y -i {}/%d.jpg -r 25 \'{}\'".format(p, dst)
+    # modify
+    output = os.path.join("demo-outputs", "demo.mp4")
+    cmd = "ffmpeg -y -i {}/%04d.jpg -r 25 {}".format(p, output)
+    # cmd = "ffmpeg -y -i {}/%04d.jpg -r 25 \'{}\'".format(p, dst)
+    print("this is output cmd: ", cmd)
     os.system(cmd)
+
+    # cmd = "ffmpeg -y -i {}/%d.jpg -r 25 \'{}\'".format(p, dst)
+    # os.system(cmd)
 
 def transformation_from_points(points1, points2):
     points1 = points1.astype(np.float64)
@@ -88,12 +97,19 @@ def transformation_from_points(points1, points2):
                          np.matrix([0., 0., 1.])])
 
 def load_video(file):
-    p = tempfile.mkdtemp()
-    cmd = 'ffmpeg -i \'{}\' -qscale:v 2 -r 25 \'{}/%d.jpg\''.format(file, p)
+    # p = tempfile.mkdtemp()
+    p = os.path.join("samples")
+    output = os.path.join("samples", "%04d.jpg")
+    print(p," see p")
+    # cmd = 'ffmpeg -i \'{}\' -qscale:v 2 -r 25 \'{}/%d.jpg\''.format(file, p)
+    # cmd = 'ffmpeg -i \'{}\' -qscale:v 2 -r 25 \'{}%04d.jpg\''.format(file, p)
+    # cmd = 'ffmpeg -i {} -qscale:v 2 -r 25 {}%04d.jpg'.format(file, p)
+    cmd = 'ffmpeg -i {} -qscale:v 2 -r 25 {}'.format(file, output)
     os.system(cmd)
     
     files = os.listdir(p)
     files = sorted(files, key=lambda x: int(os.path.splitext(x)[0]))
+    print("++ see files: ", files)
         
     array = [cv2.imread(os.path.join(p, file)) for file in files]
     
@@ -123,7 +139,7 @@ def load_video(file):
     video = np.stack(video, axis=0).astype(np.float32)
     video = torch.FloatTensor(video.transpose(3, 0, 1, 2)) / 255.0
 
-    return video, p
+    return video, p, files
 
 
 def ctc_decode(y):
@@ -139,7 +155,6 @@ if(__name__ == '__main__'):
     opt = __import__('options')
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu    
     
-    
     model = LipNet()
     model = model.cuda()
     net = nn.DataParallel(model).cuda()
@@ -154,11 +169,15 @@ if(__name__ == '__main__'):
         model_dict.update(pretrained_dict)
         model.load_state_dict(model_dict)
         
-    video, img_p = load_video(sys.argv[1])
+    # print("++ see argv[1]: ", sys.argv[1])
+    video, img_p, _ = load_video(sys.argv[1])
+    # video, img_p = load_video("test.mp4")
     y = model(video[None,...].cuda())
     txt = ctc_decode(y[0])
+    print("++ see txt: ", txt)
     
-    output_video(img_p, txt, sys.argv[2])
+    # output_video(img_p, txt, sys.argv[2])
+    output_video(img_p, txt)
     
     shutil.rmtree(img_p)
     

@@ -14,10 +14,11 @@ import torch.optim as optim
 import re
 import json
 from tensorboardX import SummaryWriter
+import options as opt
 
 
 if(__name__ == '__main__'):
-    opt = __import__('options')
+    # opt = __import__('options')
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu    
     writer = SummaryWriter()
 
@@ -41,6 +42,7 @@ def ctc_decode(y):
     
 def test(model, net):
 
+    # return
     with torch.no_grad():
         dataset = MyDataset(opt.video_path,
             opt.anno_path,
@@ -117,6 +119,13 @@ def train(model, net):
             
             optimizer.zero_grad()
             y = net(vid)
+            print(y.shape, "see y.shape")
+            print(txt, "txt")
+            print(txt.shape, "txt.shape")
+            print(vid_len.view(-1), "vid_len.view(-1)")
+            print(txt_len.view(-1), "txt_len.view(-1)")
+            print(y.transpose(0, 1).log_softmax(-1), "y.transpose(0, 1).log_softmax(-1)")
+
             loss = crit(y.transpose(0, 1).log_softmax(-1), txt, vid_len.view(-1), txt_len.view(-1))
             loss.backward()
             if(opt.is_optimize):
@@ -158,6 +167,13 @@ def train(model, net):
                 torch.save(model.state_dict(), savename)
                 if(not opt.is_optimize):
                     exit()
+            break
+        break
+    
+def predict(model, net, vid):
+    y = net(vid)
+    pred_txt = ctc_decode(y)
+
                 
 if(__name__ == '__main__'):
     print("Loading options...")
