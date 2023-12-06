@@ -15,11 +15,11 @@ capture = cv2.VideoCapture(cv2.CAP_DSHOW)
 fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
 
 # Define the codec and create VideoWriter object
-output_folder = (
-    "app_input/output-" + datetime.now().time().strftime("%H-%M-%S") + ".mp4"
-)
-videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640, 480))
-# out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
+output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.mp4'
+videoWriter = None
+if (run):
+    videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
+    # out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 
 while run:
     ret, frame = capture.read()
@@ -38,7 +38,8 @@ else:
     st.write("Stopped")
     # Release everything if job is finished
     capture.release()
-    videoWriter.release()
+    if videoWriter is not None:
+        videoWriter.release()
     cv2.destroyAllWindows()
 
 
