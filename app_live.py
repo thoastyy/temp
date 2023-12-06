@@ -48,7 +48,7 @@ show_pages(
     ]
 )
 
-st.title('LipNet Full Stack App') 
+st.title('GUI') 
 
 # result_queue = queue.Queue()
 result_queue: "queue.Queue[str]" = queue.Queue()

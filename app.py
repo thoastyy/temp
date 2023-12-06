@@ -42,7 +42,7 @@ show_pages(
     ]
 )
 
-st.title('LipNet Full Stack App') 
+st.title('GUI') 
 
 # Generating a list of options or videos 
 options = os.listdir(os.path.join('app_input'))
