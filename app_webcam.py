@@ -6,6 +6,7 @@ import cv2
 import streamlit as st
 from aiortc.contrib.media import MediaRecorder
 from streamlit_webrtc import WebRtcMode, webrtc_streamer
+import datetime import datetime
 
 # from streamlit_webrtc.sample_utils.turn import get_ice_servers
 
@@ -18,7 +19,8 @@ capture = cv2.VideoCapture(cv2.CAP_DSHOW)
 fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
 
 # Define the codec and create VideoWriter object
-videoWriter = cv2.VideoWriter('app_input/output.avi', fourcc, 30.0, (640,480))
+output_folder = 'app_input/output-' + datetime.now.time() + '.avi'
+videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
 # out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 
 while run:
