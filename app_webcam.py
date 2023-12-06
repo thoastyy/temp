@@ -19,7 +19,7 @@ capture = cv2.VideoCapture(cv2.CAP_DSHOW)
 fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
 
 # Define the codec and create VideoWriter object
-output_folder = 'app_input/output-' + datetime.now.time() + '.avi'
+output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.avi'
 videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
 # out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 
