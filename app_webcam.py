@@ -1,46 +1,45 @@
-import uuid
 from pathlib import Path
-
-import av
 import cv2
 import streamlit as st
-from aiortc.contrib.media import MediaRecorder
-from streamlit_webrtc import WebRtcMode, webrtc_streamer
 from datetime import datetime
 
 # from streamlit_webrtc.sample_utils.turn import get_ice_servers
 
 
 st.title("Webcam Live Feed")
-run = st.checkbox('Run')
+run = st.checkbox("Run")
 FRAME_WINDOW = st.image([])
 # https://stackoverflow.com/questions/52503187/getting-error-videoiomsmf-async-readsample-call-is-failed-with-error-statu
 capture = cv2.VideoCapture(cv2.CAP_DSHOW)
-fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
+# fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
+fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
 
 # Define the codec and create VideoWriter object
-output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.avi'
-videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
-# out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
+output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.mp4'
+videoWriter = None
+if (run):
+    videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
+    # out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 
 while run:
     ret, frame = capture.read()
-    
-    if ret==True:
+
+    if ret == True:
         # frame = cv2.flip(frame,0)
         frame_disp = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         FRAME_WINDOW.image(frame_disp)
 
         # write the flipped frame
-        cv2.imshow('video', frame)
+        cv2.imshow("video", frame)
         videoWriter.write(frame)
     else:
         break
 else:
-    st.write('Stopped')
+    st.write("Stopped")
     # Release everything if job is finished
     capture.release()
-    videoWriter.release()
+    if videoWriter is not None:
+        videoWriter.release()
     cv2.destroyAllWindows()
 
 
