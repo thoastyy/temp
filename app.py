@@ -39,6 +39,7 @@ show_pages(
     [
         Page("app.py", "Upload", "💾"),
         Page("app_live.py", "Live", "🎥"),
+        Page("app_webcam.py", "Record", "👄"),
     ]
 )
 
