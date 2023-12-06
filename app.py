@@ -37,8 +37,8 @@ with st.sidebar:
 
 show_pages(
     [
-        Page("app.py", "Upload", "🏠"),
-        Page("app_live.py", "Live", "🏠"),
+        Page("app.py", "Upload", "💾"),
+        Page("app_live.py", "Live", "🎥"),
     ]
 )
 

@@ -141,6 +141,32 @@ def load_video(file):
 
     return video, p, files
 
+def load_frames25(array):    
+    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False, device='cuda')
+    points = [fa.get_landmarks(I) for I in array]
+    
+    front256 = get_position(256)
+    video = []
+    for point, scene in zip(points, array):
+        if(point is not None):
+            shape = np.array(point[0])
+            shape = shape[17:]
+            M = transformation_from_points(np.matrix(shape), np.matrix(front256))
+           
+            img = cv2.warpAffine(scene, M[:2], (256, 256))
+            (x, y) = front256[-20:].mean(0).astype(np.int32)
+            w = 160//2
+            img = img[y-w//2:y+w//2,x-w:x+w,...]
+            img = cv2.resize(img, (128, 64))
+            video.append(img)
+    
+    
+    video = np.stack(video, axis=0).astype(np.float32)
+    video = torch.FloatTensor(video.transpose(3, 0, 1, 2)) / 255.0
+
+    return video
+
+
 
 def ctc_decode(y):
     y = y.argmax(-1)
