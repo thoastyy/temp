@@ -16,10 +16,11 @@ run = st.checkbox('Run')
 FRAME_WINDOW = st.image([])
 # https://stackoverflow.com/questions/52503187/getting-error-videoiomsmf-async-readsample-call-is-failed-with-error-statu
 capture = cv2.VideoCapture(cv2.CAP_DSHOW)
-fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
+# fourcc = cv2.VideoWriter_fourcc('X','V','I','D')
+fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 
 # Define the codec and create VideoWriter object
-output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.avi'
+output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.mp4'
 videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
 # out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480))
 
