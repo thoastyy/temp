@@ -1,10 +1,10 @@
-gpu = '0'
+gpu = "0"
 random_seed = 0
-data_type = 'unseen'
-video_path = '../lip/'
-train_list = f'data/{data_type}_train.txt'
-val_list = f'data/{data_type}_val.txt'
-anno_path = '../GRID_align_txt'
+data_type = "unseen"
+video_path = "../lip/"
+train_list = f"data/{data_type}_train.txt"
+val_list = f"data/{data_type}_val.txt"
+anno_path = "../GRID_align_txt"
 vid_padding = 75
 txt_padding = 200
 batch_size = 8
@@ -13,7 +13,8 @@ num_workers = 4
 max_epoch = 90
 display = 10
 test_step = 1000
-save_prefix = f'weights/LipNet_{data_type}'
+save_prefix = f"weights/LipNet_{data_type}"
 is_optimize = True
 
-weights = 'pretrain/LipNet_unseen_loss_0.44562849402427673_wer_0.1332580699113564_cer_0.06796452465503355.pt'
+two_stream_weights = "pretrain/LipNet_coords_loss_0.025581153109669685_wer_0.01746208431890914_cer_0.006488426950253695.pt"
+weights = "pretrain/LipNet_unseen_loss_0.44562849402427673_wer_0.1332580699113564_cer_0.06796452465503355.pt"
