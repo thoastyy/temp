@@ -201,9 +201,6 @@ def load_video(file):
     p = os.path.join("samples")
     output = os.path.join("samples", "%04d.jpg")
     print(p, " see p")
-    # cmd = 'ffmpeg -i \'{}\' -qscale:v 2 -r 25 \'{}/%d.jpg\''.format(file, p)
-    # cmd = 'ffmpeg -i \'{}\' -qscale:v 2 -r 25 \'{}%04d.jpg\''.format(file, p)
-    # cmd = 'ffmpeg -i {} -qscale:v 2 -r 25 {}%04d.jpg'.format(file, p)
     cmd = "ffmpeg -i {} -qscale:v 2 -r 25 {}".format(file, output)
     os.system(cmd)
 
@@ -220,6 +217,7 @@ def load_video(file):
         face_alignment.LandmarksType._2D, flip_input=False, device="cuda"
     )
     points = [fa.get_landmarks(I) for I in array]
+    print("++ see landmarks:", points)
 
     front256 = get_position(256)
     video = []

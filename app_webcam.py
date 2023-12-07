@@ -3,7 +3,19 @@ import cv2
 import streamlit as st
 from datetime import datetime
 
+import streamlit as st
+from st_pages import Page, show_pages
+import os
+from demo import load_video, ctc_decode
+from utils.two_stream_infer import TwoStreamLipNetInfer
+import os
+from scripts.extract_lip_coordinates import generate_lip_coordinates
+
+
 # from streamlit_webrtc.sample_utils.turn import get_ice_servers
+
+# ---------- LOAD MODEL ----------
+model = TwoStreamLipNetInfer().model
 
 
 st.title("Webcam Live Feed")
@@ -15,7 +27,8 @@ capture = cv2.VideoCapture(cv2.CAP_DSHOW)
 fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
 
 # Define the codec and create VideoWriter object
-output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.mp4'
+# output_folder = 'app_input/output-' + datetime.now().time().strftime("%H-%M-%S") + '.mp4'
+output_folder = 'app_input/' + 'streamlit_preview2' + '.mp4'
 videoWriter = None
 if (run):
     videoWriter = cv2.VideoWriter(output_folder, fourcc, 30.0, (640,480))
@@ -42,6 +55,35 @@ else:
         videoWriter.release()
     cv2.destroyAllWindows()
 
+
+
+col1, col2 = st.columns(2)
+
+with col1:
+    file_path = os.path.join("app_input", "streamlit_preview2.mpg")
+    print("++ see filepath",file_path)
+    
+    os.system(f"ffmpeg -i {file_path} -vcodec libx264 streamlit_preview2.mp4 -y")
+
+    # Rendering inside of the app
+    video = open("app_input\streamlit_preview2.mp4", "rb")
+    video_bytes = video.read()
+    st.video(video_bytes)
+    # if st.button("Preprocess"):
+    with st.spinner("Splitting video into frames"):
+        video, img_p, files = load_video("streamlit_preview.mp4")
+        st.markdown("Frames Generated {}".format(files))
+    with st.spinner("Generating face coordinates"):
+        coordinates = generate_lip_coordinates("samples")
+        st.markdown(f"Coordinates Extracted:\n{coordinates}")
+
+with col2:
+    st.info("Ready to make prediction!")
+    if st.button("Generate"):
+        with st.spinner("Generating prediction"):
+            y = model(video[None, ...].cuda(), coordinates[None, ...].cuda())
+            txt = ctc_decode(y[0])
+            st.text(txt[-1])
 
 # def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
 #     img = frame.to_ndarray(format="bgr24")
