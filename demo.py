@@ -201,7 +201,7 @@ def load_video(file):
     p = os.path.join("samples")
     output = os.path.join("samples", "%04d.jpg")
     print(p, " see p")
-    cmd = "ffmpeg -i {} -qscale:v 2 -r 25 {}".format(file, output)
+    cmd = "ffmpeg -i {} -qscale:v 2 -r 25 {} -y".format(file, output)
     os.system(cmd)
 
     files = os.listdir(p)
